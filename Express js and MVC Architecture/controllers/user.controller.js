@@ -1,4 +1,5 @@
 import {
+  clearUsers,
   createUsers,
   deleteUser,
   getUser,
@@ -11,9 +12,7 @@ export const createUserController = (req, res) => {
   if (response.success) {
     return res.status(200).json(response);
   } else {
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", success: false });
+    return res.status(409).json({ message: response.message, success: false });
   }
 };
 
@@ -39,17 +38,32 @@ export const removeUser = (req, res) => {
   if (deleted) {
     return res.status(200).json({ message: "User Removed", success: true });
   } else {
-    return res
-      .status(500)
-      .json({ message: "User Removal Failed", success: false });
+    return res.status(500).json({ message: "User Not Found", success: false });
   }
 };
 
 export const updateAUser = (req, res) => {
   const updated = updateUser(req.params.id, req.body);
   if (updated.success) {
-    return res.status(200).json({ message: "User Updated", updated });
+    return res.status(200).json({
+      message: "User Updated",
+      success: true,
+      updatedUser: updated.user,
+    });
   } else {
-    return res.status(404).json({ message: "User Not Found", ...updated });
+    return res.status(404).json({ message: updated.message, success: false });
+  }
+};
+
+export const deleteAllUsers = (req, res) => {
+  const cleared = clearUsers();
+  if (cleared)
+    return res
+      .status(200)
+      .json({ message: "All Users Deleted", success: true });
+  else {
+    return res
+      .status(404)
+      .json({ message: "No Users To Delete", success: false });
   }
 };
