@@ -1,5 +1,5 @@
 import { Router } from "express";
-import validate, { update } from "../util/user.validate.js";
+import validate, { update } from "../middlewares/user.validate.js";
 import {
   createUserController,
   deleteAllUsers,

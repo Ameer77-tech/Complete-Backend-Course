@@ -37,11 +37,14 @@ export const update = (req, res, next) => {
       .json({ message: "Name or Email Required", success: false });
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return res.status(400).json({
-      error: "Invalid email format",
-    });
+  if (email) {
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        error: "Invalid email format",
+      });
+    }
   }
+
   next();
 };
 

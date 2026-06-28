@@ -7,17 +7,21 @@ import {
   updateUser,
 } from "../services/user.service.js";
 
-export const createUserController = (req, res) => {
-  const response = createUsers(req.body);
+export const createUserController = async (req, res) => {
+  const response = await createUsers(req.body);
   if (response.success) {
-    return res.status(200).json(response);
+    return res
+      .status(response.statusCode)
+      .json({ message: response.message, success: true });
   } else {
-    return res.status(409).json({ message: response.message, success: false });
+    return res
+      .status(response.statusCode)
+      .json({ message: response.message, success: false });
   }
 };
 
-export const getAllUsers = (req, res) => {
-  const users = getUsers();
+export const getAllUsers = async (req, res) => {
+  const users = await getUsers();
   return res
     .status(200)
     .json({ message: "Users Fetched", users, success: true });

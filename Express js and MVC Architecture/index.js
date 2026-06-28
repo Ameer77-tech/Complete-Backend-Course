@@ -1,6 +1,6 @@
 import express, { urlencoded } from "express";
 import userRoute from "./routes/user.route.js";
-import logger from "./util/logging.js";
+import logger from "./middlewares/logging.js";
 
 const app = express();
 app.use(express.json());
@@ -16,4 +16,5 @@ app.use((req, res) => {
   });
 });
 
-app.listen(3000, () => console.log("Server Running On Port 3000"));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log("Server Running On Port 3000"));

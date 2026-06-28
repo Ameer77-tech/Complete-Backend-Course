@@ -1,33 +1,38 @@
 let users = [];
 import crypto from "crypto";
+import prisma from "../config/prisma.js";
 
-export const createUsers = (data) => {
+export const createUsers = async (data) => {
   const id = crypto.randomUUID();
-  let exists = false;
-  users.forEach((u) => {
-    if (u.email == data.email.toLowerCase()) {
-      exists = true;
+  try {
+    const exists = await prisma.user.findUnique({
+      where: {
+        email: data.email.toLowerCase(),
+      },
+    });
+    if (exists) {
+      return {
+        success: false,
+        message: "User with that email already exists",
+        statusCode: 409,
+      };
+    } else {
+      await prisma.user.create({
+        data: {
+          userId: id,
+          name: data.name,
+          email: data.email.toLowerCase(),
+        },
+      });
+      return { success: true, message: "User Created", statusCode: 200 };
     }
-  });
-  if (exists) {
-    return { message: "User with that email Already Exists", success: false };
+  } catch (err) {
+    return { success: false, message: err.message, statusCode: 500 };
   }
-  users.push({
-    id: id,
-    name: data.name.toLowerCase(),
-    email: data.email.toLowerCase(),
-  });
-  return { message: "User Created", success: true, id: id };
 };
 
-export const getUsers = () => {
-  const allUsers = users.map((u) => {
-    return {
-      name: u.name,
-      email: u.email,
-    };
-  });
-  return allUsers;
+export const getUsers = async () => {
+  return await prisma.user.findMany();
 };
 
 export const getUser = (id) => {
@@ -65,22 +70,28 @@ export const updateUser = (id, data) => {
       message: "User Not Found",
     };
   }
+  console.log(data);
 
-  const emailExists = users.some(
-    (u) => u.id !== id && u.email === data.email.toLowerCase(),
-  );
+  if (data.email) {
+    const emailExists = users.some(
+      (u) => u.id !== id && u.email === data.email.toLowerCase(),
+    );
 
-  if (emailExists) {
-    return {
-      success: false,
-      message: "User with that email already exists",
+    if (emailExists) {
+      return {
+        success: false,
+        message: "User with that email already exists",
+      };
+    }
+    users[index] = {
+      ...users[index],
+      ...data,
+      email: data.email.toLowerCase(),
     };
   }
-
   users[index] = {
     ...users[index],
     ...data,
-    email: data.email.toLowerCase(),
   };
 
   return {
