@@ -19,7 +19,9 @@ app.get("/api/v1/health", (req, res) => {
 });
 
 app.use((req, res, next) => {
-  throw new NotFoundError(`${req.method} Route ${req.url} Not Found`, 404);
+  throw new NotFoundError(`${req.method} Route ${req.url} Not Found`, 404, {
+    reply: "ROUTE NOT FOUND",
+  });
 });
 
 app.use(errorMiddlware);
