@@ -3,6 +3,7 @@ import cors from "cors";
 import env from "./config/env.js";
 import errorMiddlware from "./middlewares/error.middleware.js";
 import NotFoundError from "./errors/NotFoundError.js";
+import userRoute from "./routes/user.route.js";
 
 const app = express();
 app.use(
@@ -17,11 +18,10 @@ app.use(urlencoded({ extended: true }));
 app.get("/api/v1/health", (req, res) => {
   return res.status(200).send("Running");
 });
+app.use("/api/v1/user", userRoute);
 
 app.use((req, res, next) => {
-  throw new NotFoundError(`${req.method} Route ${req.url} Not Found`, 404, {
-    reply: "ROUTE NOT FOUND",
-  });
+  throw new NotFoundError(`${req.method} Route ${req.url} Not Found`);
 });
 
 app.use(errorMiddlware);
